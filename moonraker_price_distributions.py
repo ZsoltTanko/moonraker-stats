@@ -1,22 +1,14 @@
 import os
-from collections import defaultdict
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup
+
+import moonraker_utils
 
 
-# Meaningful labels for the moonraker lines
-meanline = 'Plot'
-meanline_plus = 'Plot.1'
-meanline_minus = 'Plot.2'
-upper_band_lowest = 'Plot.5'
-upper_band_top = 'Plot.10'
-upper_band_bottom = 'Plot.9'
-lower_band_highest = 'Plot.7'
-lower_band_top = 'Plot.11'
-lower_band_bottom = 'Plot.12'
-
+# ------------------------------------------------------------------------------------------
+# Backtest config
+# ------------------------------------------------------------------------------------------
 
 # Load tradingview ticker data for binance symbols
 tf = '60'
@@ -24,10 +16,9 @@ symbols = ['AAVEUSDT', 'ADAUSDT', 'AVAXUSDT', 'BALUSDT', 'BNBUSDT', 'DCRUSDT', '
            'DOTUSDT', 'EOSUSDT', 'ETHBTC', 'ETHUSDT', 'LINKUSDT', 'RUNEUSDT', 'RLCUSDT',
            'SOLUSDT', 'SUSHIUSDT', 'SXPUSDT', 'XMRUSDT', 'XRPUSDT', 'UNIUSDT', 'XHVUSDT',
            'YFIUSDT', 'BTCUSDT', 'LTCUSDT']
-dfs = {s:pd.read_csv(os.getcwd() + "/data/moonraker/BINANCE_" + s + ", " + tf + ".csv") for s in symbols}
 
 # Time intervals to collect stats over
-stats_time_intervals = [1,2,4,8,12,24,2*24,3*24]
+stats_time_intervals = [1, 2, 4, 8, 12, 24, 2*24, 3*24]
 
 # As a fraction of the distance between the meanline and upper band bottom
 bin_size = 0.025
@@ -35,6 +26,17 @@ bin_size = 0.025
 # Max distance from meanline to collect stats, in units of (upper band bottom - meanline)
 distr_max = 5.0
 
+
+# ------------------------------------------------------------------------------------------
+# Load data
+# ------------------------------------------------------------------------------------------
+
+dfs = {s:pd.read_csv(os.getcwd() + "/data/moonraker/BINANCE_" + s + ", " + tf + ".csv") for s in symbols}
+
+
+# ------------------------------------------------------------------------------------------
+# Collect pirce distribution stats
+# ------------------------------------------------------------------------------------------
 
 # Iterate through symbols, binning price and recording stats
 stats_bins = np.arange(-distr_max, distr_max + bin_size, bin_size) + bin_size/2
